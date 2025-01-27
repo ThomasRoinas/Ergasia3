@@ -25,9 +25,23 @@ void init_catalog(product catalog[])    //Συνάρτηση για την Αρ�
     }
 }
 
-void parent_orders(product catalog[], int c_socket, int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
+void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
 {
     int i;
+    struct sockaddr_un server;
+
+    if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+    {
+        perror("bind");
+        exit(1);
+    }
+    
+    if(listen(p_socket, 5) < 0)
+    {
+        perror("listen");
+        exit(1);
+    }
+
 
     while(1)
     {
@@ -66,9 +80,11 @@ void parent_orders(product catalog[], int c_socket, int *sum_parag, int *sum_suc
 
         sleep(1);
     }
+
+
 }
 
-void child_orders(int c_socket)
+void child_orders(int c_socket, int client_arithmos)
 {
     int i;
     int arithmos_prod;
@@ -132,8 +148,6 @@ int main()
     int sum_failparag = 0;
     int sum_price = 0;
 
-    struct sockaddr_un server;
-
     if((p_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
         perror("socket");
@@ -142,18 +156,6 @@ int main()
 
     server.sun_family = AF_UNIX;
     strcpy(server.sun_path, "server_socket");
-
-    if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
-    {
-        perror("bind");
-        exit(1);
-    }
-    
-    if(listen(p_socket, 5) < 0)
-    {
-        perror("listen");
-        exit(1);
-    }
 
     for(i=0; i<5; i++)       
     {
@@ -179,7 +181,7 @@ int main()
                 exit(1);
             }
 
-            child_orders( i+1);  
+            child_orders(c_socket, i+1);  
         }
 
         else
@@ -194,7 +196,7 @@ int main()
                     exit(1);
                 }
 
-                parent_orders(catalog, c_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);
+                parent_orders(catalog, p_socket, c_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);
             }
         }                                
     }
