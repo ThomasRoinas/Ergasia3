@@ -186,18 +186,28 @@ int main()
     (void)unlink("server_socket");
 
     int i;
-    int c_socket;
-    int p_socket;
-
-    struct sockaddr_un server;
 
     int sum_parag = 0;
     int sum_succparag = 0;
     int sum_failparag = 0;
     double sum_price = 0;
 
-    server.sun_family = AF_UNIX;
-    strcpy(server.sun_path, "server_socket");
+    pid_t par_pid = fork();
+
+    if(par_pid < 0)
+    {
+        perror("Error in fork\n");
+        return -1;
+    }
+
+    if(par_pid == 0)
+    {
+        parent_orders(catalog, &sum_parag, &sum_succparag, &sum_failparag, &sum_price); 
+        exit(0);
+    }
+
+    sleep(1);
+
 
     for(i=0; i<5; i++)       
     {
@@ -212,10 +222,11 @@ int main()
         else if(pid == 0)    
         {                   
             child_orders(i+1);  
+            exit(0);
         }
     }       
         
-    parent_orders(catalog, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);                               
+    //parent_orders(catalog, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);                               
     
     for(i=0; i<5; i++)
     {
