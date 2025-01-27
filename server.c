@@ -152,8 +152,6 @@ void statistics(int sum_parag, int sum_succparag, int sum_failparag, double sum_
     printf("Sunoliko kostos: %.2lf\n", sum_price);                 //Εμφάνιση του συνολικού κόστους των παραγγελιών που υποβλήθηκαν με ακρίβεια 2 δεκαδικά ψηφίά
 }
 
-
-
 int main()
 {
     product catalog[20];
@@ -163,7 +161,7 @@ int main()
     int c_socket;
     int p_socket;
 
-     struct sockaddr_un server;
+    struct sockaddr_un server;
 
     int sum_parag = 0;
     int sum_succparag = 0;
@@ -193,11 +191,17 @@ int main()
         {                   
             child_orders(c_socket, i+1);  
         }
-
-        else
-        {
-            parent_orders(catalog, p_socket, c_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);
-        }                                
+    }       
+        
+    parent_orders(catalog, p_socket, c_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);                               
+    
+    for(i=0; i<5; i++)
+    {
+        wait(NULL);
     }
 
+    anafora(catalog);
+    statistics(sum_parag, sum_succparag, sum_failparag, sum_price);
+
+    return 0;
 }
