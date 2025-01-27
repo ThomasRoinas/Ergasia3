@@ -32,6 +32,10 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
     int i;
     struct sockaddr_un server;
 
+    unlink("server_socket");
+    server.sun_family = AF_UNIX;
+    strcpy(server.sun_path, "server_socket");
+
     if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
         perror("bind");
@@ -65,7 +69,7 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
             printf("Client disconnected\n");
             close(c_socket);
 
-            return;
+            continue;
         }
 
         (*sum_parag) = (*sum_parag) + 1;
@@ -87,10 +91,10 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
             write(c_socket, "Products unavailable, request failed", sizeof("Products unavailable, request failed"));
         }
 
+        close(c_socket);
+
         sleep(1);
     }
-
-
 }
 
 void child_orders(int c_socket, int client_arithmos)
@@ -98,6 +102,9 @@ void child_orders(int c_socket, int client_arithmos)
     int i;
     int arithmos_prod;
     struct sockaddr_un server;
+
+    server.sun_family = AF_UNIX;
+    strcpy(server.sun_path, "server_socket");
 
     if((c_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
@@ -124,7 +131,12 @@ void child_orders(int c_socket, int client_arithmos)
 
         bread = read(c_socket, buff, sizeof(buff));
 
-        printf("Client %d: %s\n", c_socket, buff);
+        if(bread > 0)
+        {
+            printf("Server disconnected\n");
+            buff[bread] = '\0';
+            printf("Client %d: %s\n", client_arithmos, buff);
+        }
 
         sleep(1);
     }
@@ -158,6 +170,8 @@ int main()
 {
     product catalog[20];
     init_catalog(catalog);
+
+    (void)unlink("server_socket");
 
     int i;
     int c_socket;
