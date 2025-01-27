@@ -97,7 +97,7 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
     }
 }
 
-void child_orders(int c_socket, int client_arithmos)
+void child_orders(int p_socket, int client_arithmos)
 {
     int i;
     int arithmos_prod;
@@ -106,13 +106,13 @@ void child_orders(int c_socket, int client_arithmos)
     server.sun_family = AF_UNIX;
     strcpy(server.sun_path, "server_socket");
 
-    if((c_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+    if((p_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
         perror("socket");
         exit(1);
     }
 
-    if(connect(c_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+    if(connect(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
         perror("connect");
         exit(1);
@@ -124,17 +124,17 @@ void child_orders(int c_socket, int client_arithmos)
     {
         arithmos_prod = rand() % 20;
 
-        write(c_socket, &arithmos_prod, sizeof(arithmos_prod));
+        write(p_socket, &arithmos_prod, sizeof(arithmos_prod));
 
         char buff[1000];
         int bread;
 
-        bread = read(c_socket, buff, sizeof(buff));
+        bread = read(p_socket, buff, sizeof(buff));
 
         sleep(1);
     }
 
-    close(c_socket);
+    close(p_socket);
 
     exit(0);
 }
@@ -198,7 +198,7 @@ int main()
 
         else if(pid == 0)    
         {                   
-            child_orders(c_socket, i+1);  
+            child_orders(p_socket, i+1);  
         }
     }       
         
