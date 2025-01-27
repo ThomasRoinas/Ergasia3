@@ -27,10 +27,12 @@ void init_catalog(product catalog[])    //Συνάρτηση για την Αρ�
     }
 }
 
-void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
+void parent_orders(product catalog[], int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
 {
     int i;
     struct sockaddr_un server;
+
+    int p_socket, c_socket;
 
     unlink("server_socket");
     server.sun_family = AF_UNIX;
@@ -45,12 +47,14 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
     if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
         perror("bind");
+        close(p_socket);
         exit(1);
     }
     
     if(listen(p_socket, 5) < 0)
     {
         perror("listen");
+        close(p_socket);
         exit(1);
     }
 
@@ -60,12 +64,12 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
         int arithmos_prod;
         int bread;
 
-        c_socket = accept(p_socket, (struct sockaddr *) NULL, NULL);
+        c_socket = accept(p_socket, NULL, NULL);
 
         if(c_socket < 0)
         {
             perror("accept");
-            exit(1);
+            continue;
         }
 
         bread = read(c_socket, &arithmos_prod, sizeof(arithmos_prod));
@@ -97,31 +101,34 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
             write(c_socket, "Products unavailable, request failed", sizeof("Products unavailable, request failed"));
         }
 
+        close(c_socket);
+
         sleep(1);
     }
 
-    close(c_socket);
     close(p_socket);
 }
 
-void child_orders(int p_socket, int client_arithmos)
+void child_orders(int client_arithmos)
 {
     int i;
     int arithmos_prod;
     struct sockaddr_un server;
+    int c_socket;
 
     server.sun_family = AF_UNIX;
     strcpy(server.sun_path, "server_socket");
 
-    if((p_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+    if((c_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
         perror("socket");
         exit(1);
     }
 
-    if(connect(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+    if(connect(c_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
         perror("connect");
+        close(c_socket);
         exit(1);
     }
 
@@ -131,17 +138,22 @@ void child_orders(int p_socket, int client_arithmos)
     {
         arithmos_prod = rand() % 20;
 
-        write(p_socket, &arithmos_prod, sizeof(arithmos_prod));
+        write(c_socket, &arithmos_prod, sizeof(arithmos_prod));
 
         char buff[1000];
         int bread;
 
-        bread = read(p_socket, buff, sizeof(buff));
+        bread = read(c_socket, buff, sizeof(buff));
+
+        if(bread > 0)
+        {
+            printf("Client %d: %s\n", client_arithmos, buff);
+        }
 
         sleep(1);
     }
 
-    close(p_socket);
+    close(c_socket);
 
     exit(0);
 }
@@ -199,11 +211,11 @@ int main()
 
         else if(pid == 0)    
         {                   
-            child_orders(p_socket, i+1);  
+            child_orders(i+1);  
         }
     }       
         
-    parent_orders(catalog, p_socket, c_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);                               
+    parent_orders(catalog, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);                               
     
     for(i=0; i<5; i++)
     {
