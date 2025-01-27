@@ -42,12 +42,19 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
         exit(1);
     }
 
-
     while(1)
     {
         char buff[100];
         int arithmos_prod;
         int bread;
+
+        c_socket = accept(p_socket, NULL, NULL);
+
+        if(c_socket < 0)
+        {
+            perror("accept");
+            exit(1);
+        }
 
         bread = read(c_socket, &arithmos_prod, sizeof(arithmos_prod));
 
@@ -88,6 +95,19 @@ void child_orders(int c_socket, int client_arithmos)
 {
     int i;
     int arithmos_prod;
+     struct sockaddr_un server;
+
+    if((c_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+    {
+        perror("socket");
+        exit(1);
+    }
+
+    if(connect(c_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+    {
+        perror("connect");
+        exit(1);
+    }
 
     srand(time(NULL));
 
@@ -143,6 +163,8 @@ int main()
     int c_socket;
     int p_socket;
 
+     struct sockaddr_un server;
+
     int sum_parag = 0;
     int sum_succparag = 0;
     int sum_failparag = 0;
@@ -169,35 +191,12 @@ int main()
 
         else if(pid == 0)    
         {                   
-            if((c_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-            {
-                perror("socket");
-                exit(1);
-            }
-
-            if(connect(c_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
-            {
-                perror("connect");
-                exit(1);
-            }
-
             child_orders(c_socket, i+1);  
         }
 
         else
         {
-            while(1)
-            {
-                c_socket = accept(p_socket, NULL, NULL);
-
-                if(c_socket < 0)
-                {
-                    perror("accept");
-                    exit(1);
-                }
-
-                parent_orders(catalog, p_socket, c_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);
-            }
+            parent_orders(catalog, p_socket, c_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);
         }                                
     }
 
