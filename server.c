@@ -27,7 +27,7 @@ void init_catalog(product catalog[])    //Συνάρτηση για την Αρ�
     }
 }
 
-void parent_orders(product catalog[], int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
+void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
 {
     int i;
     struct sockaddr_un server;
@@ -114,21 +114,20 @@ void child_orders(int client_arithmos)
     int i;
     int arithmos_prod;
     struct sockaddr_un server;
-    int c_socket;
+    int p_socket;
 
     server.sun_family = AF_UNIX;
     strcpy(server.sun_path, "server_socket");
 
-    if((c_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+    if((p_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
         perror("socket");
         exit(1);
     }
 
-    if(connect(c_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+    if(connect(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
         perror("connect");
-        close(c_socket);
         exit(1);
     }
 
@@ -138,12 +137,12 @@ void child_orders(int client_arithmos)
     {
         arithmos_prod = rand() % 20;
 
-        write(c_socket, &arithmos_prod, sizeof(arithmos_prod));
+        write(p_socket, &arithmos_prod, sizeof(arithmos_prod));
 
         char buff[1000];
         int bread;
 
-        bread = read(c_socket, buff, sizeof(buff));
+        bread = read(p_socket, buff, sizeof(buff));
 
         if(bread > 0)
         {
@@ -153,7 +152,7 @@ void child_orders(int client_arithmos)
         sleep(1);
     }
 
-    close(c_socket);
+    close(p_socket);
 
     exit(0);
 }
@@ -183,6 +182,8 @@ int main()
     product catalog[20];
     init_catalog(catalog);
 
+    int p_socket;
+
     (void)unlink("server_socket");
 
     int i;
@@ -192,21 +193,21 @@ int main()
     int sum_failparag = 0;
     double sum_price = 0;
 
-    pid_t par_pid = fork();
+    //pid_t par_pid = fork();
 
-    if(par_pid < 0)
-    {
-        perror("Error in fork\n");
-        return -1;
-    }
+    //if(par_pid < 0)
+    //{
+    //    perror("Error in fork\n");
+     //   return -1;
+    //}
 
-    if(par_pid == 0)
-    {
-        parent_orders(catalog, &sum_parag, &sum_succparag, &sum_failparag, &sum_price); 
-        exit(0);
-    }
+   // if(par_pid == 0)
+    //{
+      //  parent_orders(catalog, &sum_parag, &sum_succparag, &sum_failparag, &sum_price); 
+        //exit(0);
+    ///}
 
-    sleep(1);
+    //sleep(1);
 
 
     for(i=0; i<5; i++)       
@@ -222,9 +223,10 @@ int main()
         else if(pid == 0)    
         {                   
             child_orders(i+1);  
-            exit(0);
         }
-    }       
+    }  
+
+    parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);      
     
     for(i=0; i<5; i++)
     {
