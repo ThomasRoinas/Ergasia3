@@ -126,7 +126,7 @@ void child_orders(int c_socket, int client_arithmos)
 
         write(c_socket, &arithmos_prod, sizeof(arithmos_prod));
 
-        char buff[100];
+        char buff[1000];
         int bread;
 
         bread = read(c_socket, buff, sizeof(buff));
