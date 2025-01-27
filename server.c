@@ -5,6 +5,8 @@
 #include <sys/un.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <errno.h>
+#include <string.h>
 
 typedef struct                //Δημιοθργία δομής struct για τα προϊόντα
 {
@@ -58,7 +60,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         exit(1);
     }
 
-    while(1)
+    for(i=0; i<50; i++)
     {
         char buff[100];
         int arithmos_prod;
@@ -182,9 +184,19 @@ int main()
     product catalog[20];
     init_catalog(catalog);
 
-    int p_socket;
+    struct sockaddr_un server;
 
-    (void)unlink("server_socket");
+    int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);
+
+    unlink("server_socket");
+
+    server.sun_family = AF_UNIX;
+
+    strcpy(server.sun_path, "server_socket");
+
+    bind(p_socket, (struct sockaddr *) &server, sizeof(server));
+
+    listen(p_socket, 5);
 
     int i;
 
@@ -206,6 +218,7 @@ int main()
         else if(pid == 0)    
         {                   
             child_orders(i+1);  
+            exit(0);
         }
     }  
 
