@@ -47,14 +47,12 @@ void parent_orders(product catalog[], int *sum_parag, int *sum_succparag, int *s
     if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
         perror("bind");
-        close(p_socket);
         exit(1);
     }
     
     if(listen(p_socket, 5) < 0)
     {
         perror("listen");
-        close(p_socket);
         exit(1);
     }
 
