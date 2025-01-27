@@ -67,3 +67,136 @@ void parent_orders(product catalog[], int c_socket, int *sum_parag, int *sum_suc
         sleep(1);
     }
 }
+
+void child_orders(int c_socket)
+{
+    int i;
+    int arithmos_prod;
+
+    srand(time(NULL));
+
+    for(i=0; i<10; i++)
+    {
+        arithmos_prod = rand() % 20;
+
+        write(c_socket, &arithmos_prod, sizeof(arithmos_prod));
+
+        char buff[100];
+        int bread;
+
+        bread = read(c_socket, buff, sizeof(buff));
+
+        printf("Client %d: %s\n", c_socket, buff);
+
+        sleep(1);
+    }
+
+    close(c_socket);
+
+    exit(0);
+}
+
+void anafora(product catalog[])
+{
+    int i;
+
+    for(i=0; i<20; i++)
+    {
+        printf("\nPerigrafi Proiontos %d: %s\n", i+1, catalog[i].description);  //Εμφάνιση της περιγραφής του προϊόντος
+        printf("Aithmata gia agora: %d\n", catalog[i].aithmata);                //Εμφάνιση των συνολικών αιτημάτων αγοράς του προϊόντος
+        printf("Temaxia Agorastikan: %d\n", catalog[i].temaxia_sell);           //Εμφάνιση του συνολικού αριθμού τεμαχίων που πωλήθηκαν
+    }
+}
+
+void statistics(int sum_parag, int sum_succparag, int sum_failparag, double sum_price)
+{
+    printf("\nSunolikos arithmos paraggeliwn: %d\n", sum_parag);   //Εμφάνιση του συνολικού αριθμού των παραγγελιών που υποβλήθηκαν
+    printf("Epituxhmenes Paraggelies: %d\n", sum_succparag);       //Εμφάνιση του συνολικού αριθμού των επιτυχημένων παραγγελιών που υποβλήθηκαν
+    printf("Apotuxhmenes Paraggelies: %d\n", sum_failparag);       //Εμφάνιση του συνολικού αριθμού των αποτυχημένων παραγγελιών που υποβλήθηκαν
+    printf("Sunoliko kostos: %.2lf\n", sum_price);                 //Εμφάνιση του συνολικού κόστους των παραγγελιών που υποβλήθηκαν με ακρίβεια 2 δεκαδικά ψηφίά
+}
+
+
+
+int main()
+{
+    product catalog[20];
+    init_catalog(catalog);
+
+    int i;
+    int c_socket;
+    int p_socket;
+
+    int sum_parag = 0;
+    int sum_succparag = 0;
+    int sum_failparag = 0;
+    int sum_price = 0;
+
+    struct sockaddr_un server;
+
+    if((p_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+    {
+        perror("socket");
+        exit(1);
+    }
+
+    server.sun_family = AF_UNIX;
+    strcpy(server.sun_path, "server_socket");
+
+    if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+    {
+        perror("bind");
+        exit(1);
+    }
+    
+    if(listen(p_socket, 5) < 0)
+    {
+        perror("listen");
+        exit(1);
+    }
+
+    for(i=0; i<5; i++)       
+    {
+        pid_t pid = fork();     
+
+        if(pid < 0)         
+        {
+            perror("Error in fork\n");   
+            return -1;
+        }
+
+        else if(pid == 0)    
+        {                   
+            if((c_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+            {
+                perror("socket");
+                exit(1);
+            }
+
+            if(connect(c_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+            {
+                perror("connect");
+                exit(1);
+            }
+
+            child_orders( i+1);  
+        }
+
+        else
+        {
+            while(1)
+            {
+                c_socket = accept(p_socket, NULL, NULL);
+
+                if(c_socket < 0)
+                {
+                    perror("accept");
+                    exit(1);
+                }
+
+                parent_orders(catalog, c_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);
+            }
+        }                                
+    }
+
+}
