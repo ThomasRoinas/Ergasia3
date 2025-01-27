@@ -131,13 +131,6 @@ void child_orders(int c_socket, int client_arithmos)
 
         bread = read(c_socket, buff, sizeof(buff));
 
-        if(bread > 0)
-        {
-            printf("Server disconnected\n");
-            buff[bread] = '\0';
-            printf("Client %d: %s\n", client_arithmos, buff);
-        }
-
         sleep(1);
     }
 
