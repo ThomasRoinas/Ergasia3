@@ -65,8 +65,10 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         char buff[100];
         int arithmos_prod;
         int bread;
+        struct sockaddr_un client_addr;
+        socklen_t client_addr_size = sizeof(client_addr);
 
-        c_socket = accept(p_socket, NULL, NULL);
+        c_socket = accept(p_socket, (struct sockaddr *) &client_addr, &client_addr_size);
 
         if(c_socket < 0)
         {
@@ -95,49 +97,50 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
             catalog[arithmos_prod].temaxia_sell++;
 
             sprintf(buff, "Purchase complete, your total is %.2lf", catalog[arithmos_prod].price);
-            write(c_socket, buff, sizeof(buff));
         }
         else
         {
+            strcpy(buff, "Purchase failed, product is out of stock");
             (*sum_failparag) = (*sum_failparag) + 1;
-            write(c_socket, "Products unavailable, request failed", sizeof("Products unavailable, request failed"));
+           
         }
+
+        write(c_socket, buff, sizeof(buff));
 
         close(c_socket);
 
         sleep(1);
     }
-
-    close(p_socket);
 }
 
 void child_orders(int client_arithmos)
 {
     int i;
-    int arithmos_prod;
-    struct sockaddr_un server;
-    int p_socket;
-
-    server.sun_family = AF_UNIX;
-    strcpy(server.sun_path, "server_socket");
-
-    if((p_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-    {
-        perror("socket");
-        exit(1);
-    }
-
-    if(connect(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
-    {
-        perror("connect");
-        exit(1);
-    }
 
     srand(time(NULL));
 
     for(i=0; i<10; i++)
     {
-        arithmos_prod = rand() % 20;
+        int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);
+
+        if(p_socket < 0)
+        {
+            perror("socket");
+            exit(1);
+        }
+
+        struct sockaddr_un server;
+        server.sun_family = AF_UNIX;
+        strcpy(server.sun_path, "server_socket");
+
+        if(connect(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+        {
+            perror("connect");
+            close(p_socket);
+            continue;
+        }
+
+        int arithmos_prod = rand() % 20;
 
         write(p_socket, &arithmos_prod, sizeof(arithmos_prod));
 
@@ -151,10 +154,10 @@ void child_orders(int client_arithmos)
             printf("Client %d: %s\n", client_arithmos, buff);
         }
 
+        close(p_socket);
+
         sleep(1);
     }
-
-    close(p_socket);
 
     exit(0);
 }
@@ -185,18 +188,32 @@ int main()
     init_catalog(catalog);
 
     struct sockaddr_un server;
+    server.sun_family = AF_UNIX;
+    strcpy(server.sun_path, "server_socket");
 
     int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);
 
+    if(p_socket < 0)
+    {
+        perror("socket");
+        exit(1);
+    }
+
     unlink("server_socket");
 
-    server.sun_family = AF_UNIX;
+    if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+    {
+        perror("bind");
+        close(p_socket);
+        exit(1);
+    }
 
-    strcpy(server.sun_path, "server_socket");
-
-    bind(p_socket, (struct sockaddr *) &server, sizeof(server));
-
-    listen(p_socket, 5);
+    if(listen(p_socket, 5) < 0)
+    {
+        perror("listen");
+        close(p_socket);
+        exit(1);
+    }
 
     int i;
 
@@ -222,7 +239,11 @@ int main()
         }
     }  
 
-    parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);      
+    parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);  
+
+    close(p_socket);
+
+    unlink("server_socket");    
     
     for(i=0; i<5; i++)
     {
