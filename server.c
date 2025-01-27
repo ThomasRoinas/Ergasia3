@@ -51,7 +51,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         exit(1);
     }
     
-    if(listen(p_socket, 20) < 0)
+    if(listen(p_socket, 5) < 0)
     {
         perror("listen");
         close(p_socket);
@@ -192,23 +192,6 @@ int main()
     int sum_succparag = 0;
     int sum_failparag = 0;
     double sum_price = 0;
-
-    //pid_t par_pid = fork();
-
-    //if(par_pid < 0)
-    //{
-    //    perror("Error in fork\n");
-     //   return -1;
-    //}
-
-   // if(par_pid == 0)
-    //{
-      //  parent_orders(catalog, &sum_parag, &sum_succparag, &sum_failparag, &sum_price); 
-        //exit(0);
-    ///}
-
-    //sleep(1);
-
 
     for(i=0; i<5; i++)       
     {
