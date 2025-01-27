@@ -31,9 +31,9 @@ void init_catalog(product catalog[])    //Συνάρτηση για την Αρ�
 
 void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
 {
-    int i;
+    int counter = 0;
 
-    for(i=0; i<50; i++)
+    while(counter < 50)
     {
         char buff[100];
         int arithmos_prod;
@@ -82,6 +82,8 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         write(c_socket, buff, sizeof(buff));
 
         close(c_socket);
+
+        counter = counter + 1;
 
         sleep(1);
     }
