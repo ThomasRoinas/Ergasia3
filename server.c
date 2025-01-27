@@ -32,7 +32,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
     int i;
     struct sockaddr_un server;
 
-    int p_socket, c_socket;
+    int c_socket;
 
     unlink("server_socket");
     server.sun_family = AF_UNIX;
