@@ -51,7 +51,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         exit(1);
     }
     
-    if(listen(p_socket, 5) < 0)
+    if(listen(p_socket, 20) < 0)
     {
         perror("listen");
         close(p_socket);
