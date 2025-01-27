@@ -184,12 +184,6 @@ int main()
     int sum_failparag = 0;
     double sum_price = 0;
 
-    if((p_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-    {
-        perror("socket");
-        exit(1);
-    }
-
     server.sun_family = AF_UNIX;
     strcpy(server.sun_path, "server_socket");
 
