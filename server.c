@@ -97,11 +97,11 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
             write(c_socket, "Products unavailable, request failed", sizeof("Products unavailable, request failed"));
         }
 
-        close(c_socket);
-        close(p_socket);
-
         sleep(1);
     }
+
+    close(c_socket);
+    close(p_socket);
 }
 
 void child_orders(int p_socket, int client_arithmos)
