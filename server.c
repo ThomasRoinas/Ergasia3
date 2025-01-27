@@ -25,7 +25,45 @@ void init_catalog(product catalog[])    //Συνάρτηση για την Αρ�
     }
 }
 
-void parent_orders(product catalog[], int c_socket)
+void parent_orders(product catalog[], int c_socket, int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
 {
-    
+    int i;
+
+    while(1)
+    {
+        char buff[100];
+        int arithmos_prod;
+        int bread;
+
+        bread = read(c_socket, &arithmos_prod, sizeof(arithmos_prod));
+
+        if(bread <= 0)
+        {
+            printf("Client disconnected\n");
+            close(c_socket);
+
+            return;
+        }
+
+        (*sum_parag) = (*sum_parag) + 1;
+        catalog[arithmos_prod].aithmata++;
+
+        if(catalog[arithmos_prod].item_count > 0)
+        {
+            (*sum_succparag) = (*sum_succparag) + 1;
+            (*sum_price) = (*sum_price) + catalog[arithmos_prod].price;
+            catalog[arithmos_prod].item_count--;
+            catalog[arithmos_prod].temaxia_sell++;
+
+            sprintf(buff, "Purchase complete, your total is %.2lf", catalog[arithmos_prod].price);
+            write(c_socket, buff, sizeof(buff));
+        }
+        else
+        {
+            (*sum_failparag) = (*sum_failparag) + 1;
+            write(c_socket, "Products unavailable, request failed", sizeof("Products unavailable, request failed"));
+        }
+
+        sleep(1);
+    }
 }
