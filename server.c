@@ -3,6 +3,8 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <sys/wait.h>
+#include <time.h>
 
 typedef struct                //Δημιοθργία δομής struct για τα προϊόντα
 {
