@@ -60,7 +60,7 @@ void parent_orders(product catalog[], int p_socket, int c_socket,  int *sum_para
         int arithmos_prod;
         int bread;
 
-        c_socket = accept(p_socket, NULL, NULL);
+        c_socket = accept(p_socket, (struct sockaddr *) NULL, NULL);
 
         if(c_socket < 0)
         {
