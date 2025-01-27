@@ -225,8 +225,6 @@ int main()
             exit(0);
         }
     }       
-        
-    //parent_orders(catalog, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);                               
     
     for(i=0; i<5; i++)
     {
