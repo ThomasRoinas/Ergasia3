@@ -32,39 +32,13 @@ void init_catalog(product catalog[])    //Συνάρτηση για την Αρ�
 void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
 {
     int i;
-    struct sockaddr_un server;
-
-    int c_socket;
-
-    unlink("server_socket");
-    server.sun_family = AF_UNIX;
-    strcpy(server.sun_path, "server_socket");
-
-    if((p_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
-    {
-        perror("socket");
-        exit(1);
-    }
-
-    if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
-    {
-        perror("bind");
-        close(p_socket);
-        exit(1);
-    }
-    
-    if(listen(p_socket, 5) < 0)
-    {
-        perror("listen");
-        close(p_socket);
-        exit(1);
-    }
 
     for(i=0; i<50; i++)
     {
         char buff[100];
         int arithmos_prod;
         int bread;
+        int c_socket;
         struct sockaddr_un client_addr;
         socklen_t client_addr_size = sizeof(client_addr);
 
