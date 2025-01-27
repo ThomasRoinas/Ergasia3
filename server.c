@@ -95,7 +95,7 @@ void child_orders(int c_socket, int client_arithmos)
 {
     int i;
     int arithmos_prod;
-     struct sockaddr_un server;
+    struct sockaddr_un server;
 
     if((c_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
@@ -166,7 +166,7 @@ int main()
     int sum_parag = 0;
     int sum_succparag = 0;
     int sum_failparag = 0;
-    int sum_price = 0;
+    double sum_price = 0;
 
     if((p_socket = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
