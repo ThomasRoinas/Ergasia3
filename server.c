@@ -63,6 +63,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
     {
         char buff[100];
         int arithmos_prod;
+
         int b_read;
         int c_socket;
         struct sockaddr_un client_addr;
@@ -117,6 +118,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
 void child_orders(int client_arithmos)
 {
     int i;
+    int arithmos_prod;
 
     srand(time(NULL));
 
@@ -141,7 +143,7 @@ void child_orders(int client_arithmos)
             continue;
         }
 
-        int arithmos_prod = rand() % 20;
+        arithmos_prod = rand() % 20;
 
         write(p_socket, &arithmos_prod, sizeof(arithmos_prod));
 
@@ -228,7 +230,7 @@ int main()
         else if(pid == 0)    
         {                   
             child_orders(i+1);  
-            exit(0);
+            //exit(0);
         }
     }      
     
