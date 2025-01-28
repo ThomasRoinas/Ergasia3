@@ -247,5 +247,7 @@ int main()
         wait(NULL);    //Αναμονή για τον τερματισμό θυγατρικής διεργασίας
     }
 
+    unlink("server_socket");
+
     return 0;
 }
