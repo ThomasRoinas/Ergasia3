@@ -43,7 +43,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         exit(1);
     }
 
-    unlink("server_socket");
+    //unlink("server_socket");
 
     if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
