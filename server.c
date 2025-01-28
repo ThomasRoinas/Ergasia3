@@ -112,8 +112,6 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
 
         sleep(1);
     }
-
-    exit(0);
 }
 
 void child_orders(int client_arithmos)
@@ -213,6 +211,8 @@ int main()
 
         anafora(catalog);
         statistics(sum_parag, sum_succparag, sum_failparag, sum_price);
+
+        exit(0);
     }
     
     for(i=0; i<5; i++)       
