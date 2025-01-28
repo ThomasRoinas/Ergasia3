@@ -211,10 +211,10 @@ int main()
     else if(parpid > 0)
     {
         parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);
-    }
 
-    anafora(catalog);
-    statistics(sum_parag, sum_succparag, sum_failparag, sum_price);
+        anafora(catalog);
+        statistics(sum_parag, sum_succparag, sum_failparag, sum_price);
+    }
     
     for(i=0; i<5; i++)       
     {
