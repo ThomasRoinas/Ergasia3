@@ -83,7 +83,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
             printf("Client disconnected\n");
             close(c_socket);
 
-            //continue;
+            continue;
         }
 
         (*sum_parag) = (*sum_parag) + 1;
