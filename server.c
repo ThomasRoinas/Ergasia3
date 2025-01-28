@@ -48,14 +48,14 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
     if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
         perror("bind");
-        close(p_socket);
+        //close(p_socket);
         exit(1);
     }
 
     if(listen(p_socket, 5) < 0)
     {
         perror("listen");
-        close(p_socket);
+        //close(p_socket);
         exit(1);
     }
 
@@ -81,7 +81,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         if(b_read <= 0)
         {
             printf("Client disconnected\n");
-            close(c_socket);
+            //close(c_socket);
 
             continue;
         }
@@ -107,6 +107,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         write(c_socket, buff, sizeof(buff));
 
         close(c_socket);
+        close(p_socket);
 
         counter = counter + 1;
 
