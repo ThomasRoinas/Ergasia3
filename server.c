@@ -64,8 +64,8 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
 
     while(counter < 50)
     {
-        char buff[100];
-        int arithmos_prod;
+        char buff[100];     //Δήλωση πίνακα χαρακτήρων 100 θέσεων για την αποθήκευση του μηνύματος για το αποτέλεσμα της παραγγελίας που θα σταλεί στον πελάτη
+        int arithmos_prod;    //Δήλωση μεταβλητής ακεραίου για την αποθήκευση του αριθμού του προϊόντος που επέλεξε ο πελάτης
 
         int b_read;
         int c_socket;
@@ -90,22 +90,22 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
             continue;
         }
 
-        (*sum_parag) = (*sum_parag) + 1;
-        catalog[arithmos_prod].aithmata++;
+        (*sum_parag) = (*sum_parag) + 1;    //Αύξηση κατά 1 του συνολικού αριθμού των παραγγελιών
+        catalog[arithmos_prod].aithmata++;    //Αύξηση κατά 1 των αιτημάτων αγοράς του προϊόντος που επέλεξε ο πελάτης
 
-        if(catalog[arithmos_prod].item_count > 0)
+        if(catalog[arithmos_prod].item_count > 0)   //Έλεγχος για αν το προϊόν είναι διαθέσιμο
         {
-            (*sum_succparag) = (*sum_succparag) + 1;
-            (*sum_price) = (*sum_price) + catalog[arithmos_prod].price;
-            catalog[arithmos_prod].item_count--;
-            catalog[arithmos_prod].temaxia_sell++;
+            (*sum_succparag) = (*sum_succparag) + 1;        //Αύξηση κατά 1 των επιτυχημένων παραγγελιών
+            (*sum_price) = (*sum_price) + catalog[arithmos_prod].price;      //Αύξηση του συνολικού κόστους των παραγγελιών προσθέτοντας την τιμή του προϊόντος
+            catalog[arithmos_prod].item_count--;                             //Μείωση της διαθεσιμότητας του προϊόντος κατά 1
+            catalog[arithmos_prod].temaxia_sell++;                           //Αύξηση κατά 1 των τεμαχίων που πωλήθηκαν
 
-            sprintf(buff, "Purchase complete, your total is %.2lf", catalog[arithmos_prod].price);
+            sprintf(buff, "Purchase complete, your total is %.2lf", catalog[arithmos_prod].price);      //Αποθήκευση του μηνύματος για το αποτέλεσμα της παραγγελίας στον πίνακα buff, χρησιμοποιώντας την sprintf για την εισαγωγή της τιμής του προϊόντος με ακρίβεια 2 δεκαδικών ψηφίων
         }
-        else
+        else     //Περίπτωση που το προϊόν δεν είναι διαθέσιμο
         {
             strcpy(buff, "Purchase failed, product is out of stock");
-            (*sum_failparag) = (*sum_failparag) + 1;
+            (*sum_failparag) = (*sum_failparag) + 1;    //Αύξηση κατά 1 των αποτυχημένων παραγγελιών
         }
 
         write(c_socket, buff, sizeof(buff));
@@ -114,18 +114,19 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
 
         counter = counter + 1;
 
-        sleep(1);
+        sleep(1);     //Χρόνος διεκπεραίωσης της παραγγελίας 1 δευτερόλεπτο
     }
 }
 
+//Συνάρτηση για την υποβολή αιτημάτων αγοράς προϊόντων από τους πελάτες
 void child_orders(int client_arithmos)
 {
     int i;
-    int arithmos_prod;
+    int arithmos_prod;     //Δήλωση μεταβλητής ακεραίου για την αποθήκευση του αριθμού του προϊόντος που επέλεξε ο πελάτης
 
     srand(time(NULL));
 
-    for(i=0; i<10; i++)
+    for(i=0; i<10; i++)    //Επανάληψη 10 φορές για την υποβολή 10 παραγγελιών από τον πελάτη
     {
         int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);
 
@@ -146,26 +147,26 @@ void child_orders(int client_arithmos)
             continue;
         }
 
-        arithmos_prod = rand() % 20;
+        arithmos_prod = rand() % 20;    //Παραγωγή τυχαίου αριθμού από το 0 έως το 19 για την επιλογή του προϊόντος που θα αγοράσει ο πελάτης
 
         write(p_socket, &arithmos_prod, sizeof(arithmos_prod));
 
-        char buff[1000];
+        char buff[100];    //Δήλωση πίνακα χαρακτήρων 100 θέσεων για την αποθήκευση του μηνύματος για το αποτέλεσμα της παραγγελίας που στλενεται από το κατάστημα στον πελάτη
         int b_read;
 
         b_read = read(p_socket, buff, sizeof(buff));
 
         if(b_read > 0)
         {
-            printf("Client %d: %s\n", client_arithmos, buff);
+            printf("Client %d: %s\n", client_arithmos, buff);    //Εμφάνιση μηνύματος για το αποτέλεσμα της παραγγελίας του πελάτη
         }
 
         close(p_socket);
 
-        sleep(1);
+        sleep(1);      //Αναμονή 1 δευτερόλεπτο ανάμεσα στις παραγγελίες των πελατών
     }
 
-    exit(0);
+    exit(0);     //Εξοδος της θυγατρικής διεργασίας
 }
 
 void anafora(product catalog[])
@@ -188,19 +189,20 @@ void statistics(int sum_parag, int sum_succparag, int sum_failparag, double sum_
     printf("Sunoliko kostos: %.2lf\n", sum_price);                 //Εμφάνιση του συνολικού κόστους των παραγγελιών που υποβλήθηκαν με ακρίβεια 2 δεκαδικά ψηφίά
 }
 
+//Συνάρτηση για την εκτέλεση των διεργασιών 
 int main()
 {
-    product catalog[20];
-    init_catalog(catalog);
+    product catalog[20];      //Δήλωση του πίνακα catalog με 20 θέσεις τύπου δομής struct product για τα προϊόντα 
+    init_catalog(catalog);    //Αρχικοποίηση του πίνακα catalog με την χρήση της συνάρτησης init_catalog
 
     int i;
 
     int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);
 
-    int sum_parag = 0;
-    int sum_succparag = 0;
-    int sum_failparag = 0;
-    double sum_price = 0;
+    int sum_parag = 0;       //Δήλωση ακεραίου για τον συνολικό αριθμό των παραγγελιών
+    int sum_succparag = 0;   //Δήλωση ακεραίου για τον συνολικό αριθμό των επιτυχημένων παραγγελιών
+    int sum_failparag = 0;   //Δήλωση ακεραίου για τον συνολικό αριθμό των αποτυχημένων παραγγελιών
+    double sum_price = 0;    //Δήλωση πραγματικού αριθμού για το συνολικό κόστος των παραγγελιών
 
     int parpid = fork();
 
@@ -212,34 +214,37 @@ int main()
 
     else if(parpid > 0)
     {
-        parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);
-
-        anafora(catalog);
-        statistics(sum_parag, sum_succparag, sum_failparag, sum_price);
+        parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);      //Κλήση της συνάρτησης parent_orders για την διαχείρηση των υποβληθέντων παραγγελιών από τους πελάτες
+                                                                                                       //Χρήση δεικτών για την μεταφορά των τιμών των μεταβλητών για χρήση τους στην main συνάρτηση
+                                                                                                       
+        anafora(catalog);      //Κλήση της συνάρτησης anafora για την εξαγωγή συγκεντρωτικής αναφοράς για κάθε προϊόν
+        statistics(sum_parag, sum_succparag, sum_failparag, sum_price);     //Κλήση της συνάρτησης statistics για την τύπωση συγκεντρωτικού μηνύματος με τα στατιστικά των παραγγελιών
 
         exit(0);
     }
     
-    for(i=0; i<5; i++)       
+    for(i=0; i<5; i++)        //Επανάληψη 5 φορές για τη δημιουργία 5 θυγατρικών διεργασιών, δηλαδή 5 πελατών
     {
-        pid_t pid = fork();     
+        pid_t pid = fork();     //Δημιουργία νέας διεργασίας με τη χρήση της κλήσης συστήματος fork
 
-        if(pid < 0)         
+        if(pid < 0)           //Ελέγχος για την επιτυχία της δημιουργίας μιας νέας θυγατρικής διεργασίας
         {
-            perror("Error in fork\n");   
+            perror("Error in fork\n");     //Εμφάνιση μηνύματος λάθους σε περίπτωση που δεν δημιουργηθεί μια νέα θυγατρική διεργασία
             return -1;
         }
 
-        else if(pid == 0)    
+        //Θυγατρική διεργασία
+        else if(pid == 0)      //Περίπτωση όπου βρισκόμαστε στην θυγατρική διεργασία
         {                   
-            child_orders(i+1);  
+            child_orders(i+1);     //Κλήση της συνάρτησης child_orders για την υποβολή των αιτημάτων αγοράς προϊόντων από τον πελάτη
+                                   //i+1 για την μεταφορά του αριθμού του πελάτη στην συνάρτηση child_orders
             exit(0);
         }
     }      
     
-    for(i=0; i<5; i++)
+    for(i=0; i<5; i++)    //Επανάληψη 5 φορές για κάθε θυγατρική διεργασία, πελάτη
     {
-        wait(NULL);
+        wait(NULL);    //Αναμονή για τον τερματισμό θυγατρικής διεργασίας
     }
 
     return 0;
