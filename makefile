@@ -16,13 +16,13 @@ clean :
 
 #  1) Xειαζόμαστε τα αρχεία: 
 
-#	    server.c 
-#	    server.h
+#	  server.c 
+#	  server.h
 # 	  makefile
 
 
 #  2) Εντολές:
 
 # 	  make server (ή make all ή make)
-#     ./server
+#         ./server
 # 	  make clean
