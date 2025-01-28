@@ -228,9 +228,7 @@ int main()
             child_orders(i+1);  
             exit(0);
         }
-    }  
-
-   // parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);     
+    }      
     
     for(i=0; i<5; i++)
     {
