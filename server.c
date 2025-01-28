@@ -102,7 +102,6 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         {
             strcpy(buff, "Purchase failed, product is out of stock");
             (*sum_failparag) = (*sum_failparag) + 1;
-           
         }
 
         write(c_socket, buff, sizeof(buff));
@@ -113,6 +112,8 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
 
         sleep(1);
     }
+
+    exit(0);
 }
 
 void child_orders(int client_arithmos)
