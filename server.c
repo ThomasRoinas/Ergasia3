@@ -37,7 +37,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
     {
         char buff[100];
         int arithmos_prod;
-        int bread;
+        int b_read;
         int c_socket;
         struct sockaddr_un client_addr;
         socklen_t client_addr_size = sizeof(client_addr);
@@ -50,9 +50,9 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
             continue;
         }
 
-        bread = read(c_socket, &arithmos_prod, sizeof(arithmos_prod));
+        b_read = read(c_socket, &arithmos_prod, sizeof(arithmos_prod));
 
-        if(bread <= 0)
+        if(b_read <= 0)
         {
             printf("Client disconnected\n");
             close(c_socket);
@@ -121,11 +121,11 @@ void child_orders(int client_arithmos)
         write(p_socket, &arithmos_prod, sizeof(arithmos_prod));
 
         char buff[1000];
-        int bread;
+        int b_read;
 
-        bread = read(p_socket, buff, sizeof(buff));
+        b_read = read(p_socket, buff, sizeof(buff));
 
-        if(bread > 0)
+        if(b_read > 0)
         {
             printf("Client %d: %s\n", client_arithmos, buff);
         }
@@ -163,6 +163,13 @@ int main()
     product catalog[20];
     init_catalog(catalog);
 
+    int i;
+
+    int sum_parag = 0;
+    int sum_succparag = 0;
+    int sum_failparag = 0;
+    double sum_price = 0;
+
     struct sockaddr_un server;
     server.sun_family = AF_UNIX;
     strcpy(server.sun_path, "server_socket");
@@ -190,13 +197,6 @@ int main()
         close(p_socket);
         exit(1);
     }
-
-    int i;
-
-    int sum_parag = 0;
-    int sum_succparag = 0;
-    int sum_failparag = 0;
-    double sum_price = 0;
 
     for(i=0; i<5; i++)       
     {
