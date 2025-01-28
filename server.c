@@ -37,13 +37,13 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
     server.sun_family = AF_UNIX;
     strcpy(server.sun_path, "server_socket");
 
+    unlink("server_socket");
+
     if(p_socket < 0)
     {
         perror("socket");
         exit(1);
     }
-
-    //unlink("server_socket");
 
     if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
     {
