@@ -230,7 +230,7 @@ int main()
         else if(pid == 0)    
         {                   
             child_orders(i+1);  
-            //exit(0);
+            exit(0);
         }
     }      
     
