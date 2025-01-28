@@ -33,6 +33,34 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
 {
     int counter = 0;
 
+    struct sockaddr_un server;
+    server.sun_family = AF_UNIX;
+    strcpy(server.sun_path, "server_socket");
+
+    int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);
+
+    if(p_socket < 0)
+    {
+        perror("socket");
+        exit(1);
+    }
+
+    unlink("server_socket");
+
+    if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+    {
+        perror("bind");
+        close(p_socket);
+        exit(1);
+    }
+
+    if(listen(p_socket, 5) < 0)
+    {
+        perror("listen");
+        close(p_socket);
+        exit(1);
+    }
+
     while(counter < 50)
     {
         char buff[100];
@@ -165,38 +193,14 @@ int main()
 
     int i;
 
+    int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);
+
     int sum_parag = 0;
     int sum_succparag = 0;
     int sum_failparag = 0;
     double sum_price = 0;
 
-    struct sockaddr_un server;
-    server.sun_family = AF_UNIX;
-    strcpy(server.sun_path, "server_socket");
-
-    int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);
-
-    if(p_socket < 0)
-    {
-        perror("socket");
-        exit(1);
-    }
-
-    unlink("server_socket");
-
-    if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
-    {
-        perror("bind");
-        close(p_socket);
-        exit(1);
-    }
-
-    if(listen(p_socket, 5) < 0)
-    {
-        perror("listen");
-        close(p_socket);
-        exit(1);
-    }
+    
 
     for(i=0; i<5; i++)       
     {
@@ -215,11 +219,7 @@ int main()
         }
     }  
 
-    parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);  
-
-    //close(p_socket);
-
-    //unlink("server_socket");    
+    parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);     
     
     for(i=0; i<5; i++)
     {
