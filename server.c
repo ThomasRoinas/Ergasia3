@@ -81,7 +81,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         if(b_read <= 0)
         {
             printf("Client disconnected\n");
-            //close(c_socket);
+            close(c_socket);
 
             continue;
         }
