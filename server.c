@@ -37,8 +37,6 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
     server.sun_family = AF_UNIX;
     strcpy(server.sun_path, "server_socket");
 
-    //int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);
-
     if(p_socket < 0)
     {
         perror("socket");
@@ -85,7 +83,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
             printf("Client disconnected\n");
             close(c_socket);
 
-            continue;
+            //continue;
         }
 
         (*sum_parag) = (*sum_parag) + 1;
@@ -237,6 +235,6 @@ int main()
     {
         wait(NULL);
     }
-    
+
     return 0;
 }
