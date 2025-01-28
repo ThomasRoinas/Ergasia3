@@ -118,7 +118,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
 void child_orders(int client_arithmos)
 {
     int i;
-    int arithmos_prod;
+    //int arithmos_prod;
 
     srand(time(NULL));
 
@@ -143,7 +143,7 @@ void child_orders(int client_arithmos)
             continue;
         }
 
-        arithmos_prod = rand() % 20;
+        int arithmos_prod = rand() % 20;
 
         write(p_socket, &arithmos_prod, sizeof(arithmos_prod));
 
