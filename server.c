@@ -200,8 +200,19 @@ int main()
     int sum_failparag = 0;
     double sum_price = 0;
 
-    
+    int parpid = fork();
 
+    if(parpid < 0)
+    {
+        perror("Error in fork\n");
+        return -1;
+    }
+
+    else if(parpid > 0)
+    {
+        parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);
+    }
+    
     for(i=0; i<5; i++)       
     {
         pid_t pid = fork();     
@@ -219,7 +230,7 @@ int main()
         }
     }  
 
-    parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);     
+   // parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);     
     
     for(i=0; i<5; i++)
     {
