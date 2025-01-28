@@ -217,9 +217,9 @@ int main()
 
     parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);  
 
-    close(p_socket);
+    //close(p_socket);
 
-    unlink("server_socket");    
+    //unlink("server_socket");    
     
     for(i=0; i<5; i++)
     {
