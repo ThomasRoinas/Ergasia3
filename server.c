@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <stdio.h>          //Πηγαίος Κώδικας
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -29,8 +29,11 @@ void init_catalog(product catalog[])    //Συνάρτηση για την Αρ�
     }
 }
 
+//Δημιουργία συναρτήσεων για την εκτέλεση των διεργασιών
+
+//Συνάρτηση για την διαχείρηση των υποβληθέντων παραγγελιών από τους πελάτες
 void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_succparag, int *sum_failparag, double *sum_price)
-{
+{                                                   //Χρήση δεικτών για την μεταφορά των τιμών των μεταβλητών για χρήση τους στην main συνάρτηση
     int counter = 0;
 
     struct sockaddr_un server;
