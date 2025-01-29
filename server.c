@@ -227,7 +227,7 @@ int main()
         exit(0);  //Εξοδος της πατρικής διεργασίας
     }
 
-    printf("Program starting in 3 seconds\n");
+    printf("Program starting in 3 seconds...\n\n");
     
     for(i=0; i<5; i++)        //Επανάληψη 5 φορές για τη δημιουργία 5 θυγατρικών διεργασιών, δηλαδή 5 πελατών
     {
