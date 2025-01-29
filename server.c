@@ -86,6 +86,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         {
             printf("Client disconnected\n");
             counter = counter - 1;
+            (*sum_parag) = (*sum_parag) - 1;    //Μείωση κατά 1 του συνολικού αριθμού των παραγγελιών
             close(c_socket);    //Κλείσιμο του socket του πελάτη σε περίπτωση που δεν είναι δυνατή η ανάγνωση του αριθμού του προϊόντος που επέλεξε ο πελάτης
 
             continue;     //Συνέχιση της επανάληψης σε περίπτωση που δεν είναι δυνατή η ανάγνωση του αριθμού του προϊόντος που επέλεξε ο πελάτης
