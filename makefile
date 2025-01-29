@@ -23,6 +23,6 @@ clean :
 
 #  2) Εντολές:
 
-# 	  make server (ή make all ή make)
+# 	  make server
 #         ./server
 # 	  make clean
