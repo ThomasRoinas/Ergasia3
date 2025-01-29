@@ -142,10 +142,14 @@ void child_orders(int client_arithmos)
         server.sun_family = AF_UNIX;   //Αρχικοποίηση του πεδίου sun_family της δομής struct sockaddr_un για την χρήση του πρωτοκόλλου AF_UNIX
         strcpy(server.sun_path, "server_socket");   //Αντιγραφή του server_socket στο πεδίο sun_path της δομής struct sockaddr_un
 
+        int prosp = 100;
+
+        while(prosp > 0){
         if(connect(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)   //Υποβολή αιτήματος σύνδεσης από τον πελάτη στον server
         {
             perror("connect");
             close(p_socket);   //Κλείσιμο του socket για την αποφυγή διαρροής μνήμης
+            prosp = prosp - 1;
             continue;          //Συνέχιση της επανάληψης σε περίπτωση που δεν είναι δυνατή η σύνδεση του πελάτη με τον server
         }
 
@@ -216,7 +220,7 @@ int main()
         return -1;
     }
 
-    else if(parpid == 0)   //Περίπτωση όπου βρισκόμαστε στην πατρική διεργασία
+    else if(parpid > 0)   //Περίπτωση όπου βρισκόμαστε στην πατρική διεργασία
     {
         parent_orders(catalog, p_socket, &sum_parag, &sum_succparag, &sum_failparag, &sum_price);      //Κλήση της συνάρτησης parent_orders για την διαχείρηση των υποβληθέντων παραγγελιών από τους πελάτες
                                                                                                        //Χρήση δεικτών για την μεταφορά των τιμών των μεταβλητών για χρήση τους στην main συνάρτηση
