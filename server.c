@@ -142,20 +142,13 @@ void child_orders(int client_arithmos)
         server.sun_family = AF_UNIX;   //Αρχικοποίηση του πεδίου sun_family της δομής struct sockaddr_un για την χρήση του πρωτοκόλλου AF_UNIX
         strcpy(server.sun_path, "server_socket");   //Αντιγραφή του server_socket στο πεδίο sun_path της δομής struct sockaddr_un
 
-        int prosp = 100;
-
-        while(prosp > 0){
         if(connect(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)   //Υποβολή αιτήματος σύνδεσης από τον πελάτη στον server
         {
             perror("connect");
             close(p_socket);   //Κλείσιμο του socket για την αποφυγή διαρροής μνήμης
-            prosp = prosp - 1;
+            continue;          //Συνέχιση της επανάληψης σε περίπτωση που δεν είναι δυνατή η σύνδεση με τον server
         }
-        else
-        {
-            break;
-        }
-        }
+        
         arithmos_prod = rand() % 20;    //Παραγωγή τυχαίου αριθμού από το 0 έως το 19 για την επιλογή του προϊόντος που θα αγοράσει ο πελάτης
 
         write(p_socket, &arithmos_prod, sizeof(arithmos_prod));    //Αποστολή του αριθμού του προϊόντος που επέλεξε ο πελάτης στον server μέσω του parent socket
