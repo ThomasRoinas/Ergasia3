@@ -40,7 +40,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
     server.sun_family = AF_UNIX;    //Αρχικοποίηση του πεδίου sun_family της δομής struct sockaddr_un για την χρήση του πρωτοκόλλου AF_UNIX
     strcpy(server.sun_path, "server_socket");    //Αντιγραφή του server_socket στο πεδίο sun_path της δομής struct sockaddr_un
 
-    if(p_socket < 0)   //Δημιουργία socket
+    if(p_socket < 0)   //Δημιουργία socket (parent socket) για την επικοινωνία
     {
         perror("socket");
         exit(1);
@@ -51,14 +51,14 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
     if(bind(p_socket, (struct sockaddr *) &server, sizeof(server)) < 0)    //Συσχέτιση του socket με την τοπική διεύθυνση του server για επικοινωνία
     {
         perror("bind");
-        close(p_socket);   //Κλείσιμο του socket για την αποφυγή διαρροής μνήμης
+        close(p_socket);   //Κλείσιμο του socket (parent socket) για την αποφυγή διαρροής μνήμης
         exit(1);
     }
 
     if(listen(p_socket, 5) < 0)    //Αναμονή για αίτημα σύνδεσης από τον πελάτη με μέγιστο αριθμό συνδέσεων 5
     {
         perror("listen");
-        close(p_socket);   //Κλείσιμο του socket για την αποφυγή διαρροής μνήμης
+        close(p_socket);   //Κλείσιμο του socket (parent socket) για την αποφυγή διαρροής μνήμης
         exit(1);
     }
 
@@ -68,7 +68,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         int arithmos_prod;    //Δήλωση μεταβλητής ακεραίου για την αποθήκευση του αριθμού του προϊόντος που επέλεξε ο πελάτης
 
         int b_read;                 //Δήλωση μεταβλητής για την αποθήκευση του αριθμού των bytes που διαβάστηκαν από το socket
-        int c_socket;               //Δήλωση μεταβλητής για το socket του πελάτη
+        int c_socket;               //Δήλωση μεταβλητής για το socket του πελάτη (client socket)
         struct sockaddr_un client_addr;   //Δήλωση δομής struct sockaddr_un για τον πελάτη
         socklen_t client_addr_size = sizeof(client_addr);    //Δήλωση μεταβλητής τύπου socklen_t για το μέγεθος της δομής struct sockaddr_un του πελάτη
 
@@ -99,6 +99,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
             (*sum_price) = (*sum_price) + catalog[arithmos_prod].price;      //Αύξηση του συνολικού κόστους των παραγγελιών προσθέτοντας την τιμή του προϊόντος
             catalog[arithmos_prod].item_count--;                             //Μείωση της διαθεσιμότητας του προϊόντος κατά 1
             catalog[arithmos_prod].temaxia_sell++;                           //Αύξηση κατά 1 των τεμαχίων που πωλήθηκαν
+            counter = counter + 1;                                           //Αύξηση κατά 1 του μετρητή των παραγγελιών
 
             sprintf(buff, "Purchase complete, your total is %.2lf", catalog[arithmos_prod].price);      //Αποθήκευση του μηνύματος για το αποτέλεσμα της παραγγελίας στον πίνακα buff, χρησιμοποιώντας την sprintf για την εισαγωγή της τιμής του προϊόντος με ακρίβεια 2 δεκαδικών ψηφίων
         }
@@ -106,13 +107,14 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         {
             strcpy(buff, "Purchase failed, product is out of stock");    //Αποθήκευση του μηνύματος για το αποτέλεσμα της παραγγελίας στον πίνακα buff
             (*sum_failparag) = (*sum_failparag) + 1;    //Αύξηση κατά 1 των αποτυχημένων παραγγελιών
+            counter = counter + 1;    //Αύξηση κατά 1 του μετρητή των παραγγελιών
         }
 
         write(c_socket, buff, sizeof(buff));    //Αποστολή του μηνύματος για το αποτέλεσμα της παραγγελίας στον πελάτη μέσω του socket του πελάτη, με τη χρήση του συγγραφέα (write)
 
-        close(c_socket);    //Κλείσιμο του socket του πελάτη για την αποφυγή διαρροής μνήμης
+        close(c_socket);    //Κλείσιμο του socket του πελάτη (client socket) για την αποφυγή διαρροής μνήμης
 
-        counter = counter + 1;    //Αύξηση κατά 1 του μετρητή των παραγγελιών
+        //counter = counter + 1;    //Αύξηση κατά 1 του μετρητή των παραγγελιών
 
         sleep(1);     //Χρόνος διεκπεραίωσης της παραγγελίας 1 δευτερόλεπτο
     }
@@ -128,9 +130,9 @@ void child_orders(int client_arithmos)
 
     for(i=0; i<10; i++)    //Επανάληψη 10 φορές για την υποβολή 10 παραγγελιών από τον πελάτη
     {
-        int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);    //Δημιουργία socket για την επικοινωνία με τον server
+        int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);    //Δημιουργία socket (parent socket) για την επικοινωνία με τον server
 
-        if(p_socket < 0)   //Έλεγχος για την επιτυχία της δημιουργίας του socket
+        if(p_socket < 0)   //Έλεγχος για την επιτυχία της δημιουργίας του socket (parent socket)
         {
             perror("socket");
             exit(1);
@@ -149,7 +151,7 @@ void child_orders(int client_arithmos)
 
         arithmos_prod = rand() % 20;    //Παραγωγή τυχαίου αριθμού από το 0 έως το 19 για την επιλογή του προϊόντος που θα αγοράσει ο πελάτης
 
-        write(p_socket, &arithmos_prod, sizeof(arithmos_prod));    //Αποστολή του αριθμού του προϊόντος που επέλεξε ο πελάτης στον server μέσω του socket
+        write(p_socket, &arithmos_prod, sizeof(arithmos_prod));    //Αποστολή του αριθμού του προϊόντος που επέλεξε ο πελάτης στον server μέσω του parent socket
 
         char buff[100];    //Δήλωση πίνακα χαρακτήρων 100 θέσεων για την αποθήκευση του μηνύματος για το αποτέλεσμα της παραγγελίας που στλενεται από το κατάστημα στον πελάτη
         int b_read;        //Δήλωση μεταβλητής για τον αριθμό των bytes που διαβάστηκαν από το socket
@@ -161,7 +163,7 @@ void child_orders(int client_arithmos)
             printf("Client %d: %s\n", client_arithmos, buff);    //Εμφάνιση μηνύματος για το αποτέλεσμα της παραγγελίας του πελάτη
         }
 
-        close(p_socket);   //Κλείσιμο του socket για την αποφυγή διαρροής μνήμης
+        close(p_socket);   //Κλείσιμο του parent socket για την αποφυγή διαρροής μνήμης
 
         sleep(1);      //Αναμονή 1 δευτερόλεπτο ανάμεσα στις παραγγελίες των πελατών
     }
@@ -199,7 +201,7 @@ int main()
 
     int i;
 
-    int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);   //Δημιουργία socket για την επικοινωνία με τον server
+    int p_socket = socket(AF_UNIX, SOCK_STREAM, 0);   //Δημιουργία socket (parent socket) για την επικοινωνία με τον server
 
     int sum_parag = 0;       //Δήλωση ακεραίου για τον συνολικό αριθμό των παραγγελιών
     int sum_succparag = 0;   //Δήλωση ακεραίου για τον συνολικό αριθμό των επιτυχημένων παραγγελιών
