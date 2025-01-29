@@ -9,7 +9,7 @@
 
 ## Οδηγίες για makefile ##
 ```
-make all (ή make server ή make)
+make server
 ```
 ```
 ./server    
