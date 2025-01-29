@@ -99,7 +99,7 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
             (*sum_price) = (*sum_price) + catalog[arithmos_prod].price;      //Αύξηση του συνολικού κόστους των παραγγελιών προσθέτοντας την τιμή του προϊόντος
             catalog[arithmos_prod].item_count--;                             //Μείωση της διαθεσιμότητας του προϊόντος κατά 1
             catalog[arithmos_prod].temaxia_sell++;                           //Αύξηση κατά 1 των τεμαχίων που πωλήθηκαν
-            counter = counter + 1;                                           //Αύξηση κατά 1 του μετρητή των παραγγελιών
+            //counter = counter + 1;                                           //Αύξηση κατά 1 του μετρητή των παραγγελιών
 
             sprintf(buff, "Purchase complete, your total is %.2lf", catalog[arithmos_prod].price);      //Αποθήκευση του μηνύματος για το αποτέλεσμα της παραγγελίας στον πίνακα buff, χρησιμοποιώντας την sprintf για την εισαγωγή της τιμής του προϊόντος με ακρίβεια 2 δεκαδικών ψηφίων
         }
@@ -107,14 +107,14 @@ void parent_orders(product catalog[], int p_socket, int *sum_parag, int *sum_suc
         {
             strcpy(buff, "Purchase failed, product is out of stock");    //Αποθήκευση του μηνύματος για το αποτέλεσμα της παραγγελίας στον πίνακα buff
             (*sum_failparag) = (*sum_failparag) + 1;    //Αύξηση κατά 1 των αποτυχημένων παραγγελιών
-            counter = counter + 1;    //Αύξηση κατά 1 του μετρητή των παραγγελιών
+            //counter = counter + 1;    //Αύξηση κατά 1 του μετρητή των παραγγελιών
         }
 
         write(c_socket, buff, sizeof(buff));    //Αποστολή του μηνύματος για το αποτέλεσμα της παραγγελίας στον πελάτη μέσω του socket του πελάτη, με τη χρήση του συγγραφέα (write)
 
         close(c_socket);    //Κλείσιμο του socket του πελάτη (client socket) για την αποφυγή διαρροής μνήμης
 
-        //counter = counter + 1;    //Αύξηση κατά 1 του μετρητή των παραγγελιών
+        counter = counter + 1;    //Αύξηση κατά 1 του μετρητή των παραγγελιών
 
         sleep(1);     //Χρόνος διεκπεραίωσης της παραγγελίας 1 δευτερόλεπτο
     }
