@@ -1,4 +1,4 @@
-//Header file for server-client.c
+// Header file for server-client.c
 // Declare the functions and structs used in server-client.c
 
 void init_catalog(product catalog[])   
