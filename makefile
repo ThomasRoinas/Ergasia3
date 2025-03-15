@@ -1,6 +1,6 @@
-#Makefile for server-client
+# Makefile for server-client
 
-#instructions for make: (command line / terminal)
+# instructions for make: (command line / terminal)
 # 1. type make-server
 # 2. type ./server-server
 # 3. type make clean to remove the object files and the executable
