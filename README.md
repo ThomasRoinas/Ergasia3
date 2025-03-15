@@ -1,6 +1,6 @@
 # Repository για την Εργασία 3 - Προγραμματισμός ΙΙΙ #
-* Header File: __server.h__   
-* Source Code: __server.c__    
+* Header File: __server-client.h__   
+* Source Code: __server-client.c__    
 * Makefile: __makefile__    
 
 ## Μέλη Ομάδας ##
@@ -9,10 +9,10 @@
 
 ## Οδηγίες για makefile ##
 ```
-make server
+make server-client
 ```
 ```
-./server    
+./server-client   
 ```
 ```
 make clean
