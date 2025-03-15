@@ -1,28 +1,17 @@
-all: server
+#Makefile for server-client
 
-server: server.o
-	cc -o server server.o
+#instructions for make: (command line / terminal)
+# 1. type make-server
+# 2. type ./server-server
+# 3. type make clean to remove the object files and the executable
 
-server.o : server.c server.h
-	cc -c -o server.o server.c
+all: server-client 
+
+server: server-client.o
+	cc -o server-client server-client.o
+
+server.o : server-client.c server-client.h
+	cc -c -o server-client.o server-client.c
 
 clean :
-	rm *.o server
-
-
-#Makefile
-
-# Οδηγίες:
-
-#  1) Xειαζόμαστε τα αρχεία: 
-
-#	  server.c 
-#	  server.h
-# 	  makefile
-
-
-#  2) Εντολές:
-
-# 	  make server
-#         ./server
-# 	  make clean
+	rm *.o server-client
