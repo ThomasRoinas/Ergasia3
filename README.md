@@ -43,7 +43,7 @@ __Comments__ in the code of each file is also provided for better understanding 
 >- __server-client.c__    
 >- __makefile__
 
-<h2 align="center">
+<h2 align="left">
    Makefile instructions (for running as is)
 </h2>
 
@@ -62,7 +62,7 @@ make clean
 
 <hr/>
 
-# Code
-
+# Code 
+>alternate code using pipelines.
 >[!NOTE]
 >The original version of the code implemented with pipes (pipeline) is availiable [here](https://github.com/ThomasRoinas/server-client-pipes)
