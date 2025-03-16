@@ -7,7 +7,7 @@ Code for creating inter-process communication (IPC) among server and client repl
 >[!NOTE]
 >This repository was made for showcasing my attempt at an assignemnt given durnig our Lab Programming UNIX course on inter-process communication (IPC) using sockets.
 
-<h2 align="left">
+<h2 align="center">
    Code explanation
 </h2>
 
@@ -43,7 +43,7 @@ __Comments__ in the code of each file is also provided for better understanding 
 >- __server-client.c__    
 >- __makefile__
 
-<h2 align="left">
+<h2 align="center">
    Makefile instructions (for running as is)
 </h2>
 
