@@ -7,7 +7,7 @@ Code for creating inter-process communication (IPC) among server and client repl
 >[!NOTE]
 >This repository was made for showcasing my attempt at an assignemnt given durnig our Lab Programming UNIX course on inter-process communication (IPC) using sockets.
 
-<h2 align="right">
+<h2 align="left">
    Code explanation
 </h2>
 
