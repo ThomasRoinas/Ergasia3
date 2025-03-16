@@ -63,4 +63,4 @@ make clean
 <hr/>
 
 >[!NOTE]
->Another version of the code implemented with pipes (pipeline) is availiable [here](https://github.com/ThomasRoinas/server-client-pipes)
+>The original version of the code implemented with pipes (pipeline) is availiable [here](https://github.com/ThomasRoinas/server-client-pipes)
