@@ -64,5 +64,6 @@ make clean
 
 # Code 
 >alternate code using pipelines.
+
 >[!NOTE]
 >The original version of the code implemented with pipes (pipeline) is availiable [here](https://github.com/ThomasRoinas/server-client-pipes)
